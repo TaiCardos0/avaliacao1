@@ -2,12 +2,15 @@
 
 Aplicativo de lista de compras feito para a avaliação da disciplina de Programação Mobile.
 
-## O que o app faz
+O app realiza o CRUD (criar, listar, editar e excluir) de produtos em uma lista de mercado.
 
-- Adicionar itens na lista
+## Funcionalidades
+
+- Criar itens
+- Listar itens
 - Editar itens
+- Excluir itens
 - Marcar itens como comprados
-- Remover itens
 
 ## Tecnologias
 

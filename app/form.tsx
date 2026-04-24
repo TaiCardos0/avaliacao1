@@ -38,7 +38,7 @@ export default function FormScreen() {
       try {
         const product = await ProductRepository.getProductById(Number(id));
         if (!product) {
-          Alert.alert('Erro', 'Item não encontrado.');
+          Alert.alert('Erro', 'Item nao encontrado.');
           router.back();
           return;
         }
@@ -46,7 +46,7 @@ export default function FormScreen() {
         setQuantity(String(product.quantity));
         setPrice(product.price ? String(product.price) : '');
       } catch (error) {
-        Alert.alert('Erro', 'Não foi possível carregar o item.');
+        Alert.alert('Erro', 'Nao foi possivel carregar o item.');
         router.back();
       } finally {
         setLoading(false);
@@ -56,14 +56,14 @@ export default function FormScreen() {
     loadProduct();
   }, [id, isEditing, router]);
 
-  const handleSave = async () => {
+  async function handleSave() {
     if (!name.trim()) {
-      Alert.alert('Campo obrigatório', 'Informe o nome do item.');
+      Alert.alert('Atencao', 'Informe o nome do item.');
       return;
     }
 
-    const parsedQuantity = parseInt(quantity) || 1;
-    const parsedPrice = price.trim() ? parseFloat(price.replace(',', '.')) : null;
+    const qtd = parseInt(quantity) || 1;
+    const preco = price.trim() ? parseFloat(price.replace(',', '.')) : null;
 
     setSaving(true);
     try {
@@ -71,23 +71,23 @@ export default function FormScreen() {
         await ProductRepository.updateProduct({
           id: Number(id),
           name: name.trim(),
-          quantity: parsedQuantity,
-          price: parsedPrice,
+          quantity: qtd,
+          price: preco,
         });
       } else {
         await ProductRepository.createProduct({
           name: name.trim(),
-          quantity: parsedQuantity,
-          price: parsedPrice,
+          quantity: qtd,
+          price: preco,
         });
       }
       router.back();
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível salvar o item.');
+      Alert.alert('Erro', 'Nao foi possivel salvar o item.');
     } finally {
       setSaving(false);
     }
-  };
+  }
 
   if (loading) {
     return (

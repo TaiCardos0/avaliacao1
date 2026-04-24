@@ -1,8 +1,3 @@
-/**
- * src/hooks/useProducts.ts
- * Hook customizado com toda a lógica da lista de mercado
- */
-
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import * as ProductRepository from '../database/productRepository';
@@ -18,7 +13,7 @@ export function useProducts() {
       const data = await ProductRepository.getProducts();
       setProducts(data);
     } catch (error) {
-      console.error('Erro ao carregar produtos:', error);
+      console.log('Erro ao carregar:', error);
     } finally {
       setLoading(false);
     }
@@ -27,31 +22,24 @@ export function useProducts() {
   useFocusEffect(
     useCallback(() => {
       loadProducts();
-    }, [loadProducts]),
+    }, [loadProducts])
   );
 
-  const togglePurchased = useCallback(
-    async (id: number, currentPurchased: number) => {
-      const newPurchased = currentPurchased === 0 ? 1 : 0;
-      await ProductRepository.togglePurchased(id, newPurchased);
-      await loadProducts();
-    },
-    [loadProducts],
-  );
+  async function togglePurchased(id: number, current: number) {
+    const novo = current === 0 ? 1 : 0;
+    await ProductRepository.togglePurchased(id, novo);
+    await loadProducts();
+  }
 
-  const removeProduct = useCallback(
-    async (id: number) => {
-      await ProductRepository.deleteProduct(id);
-      await loadProducts();
-    },
-    [loadProducts],
-  );
+  async function removeProduct(id: number) {
+    await ProductRepository.deleteProduct(id);
+    await loadProducts();
+  }
 
   return {
     products,
     loading,
     togglePurchased,
     removeProduct,
-    reload: loadProducts,
   };
 }

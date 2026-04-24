@@ -15,70 +15,74 @@ export default function HomeScreen() {
   const router = useRouter();
   const { products, loading, togglePurchased, removeProduct } = useProducts();
 
-  const handleDelete = (id: number, name: string) => {
+  function handleDelete(id: number, name: string) {
     Alert.alert(
       'Excluir item',
       `Deseja excluir "${name}" da lista?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Excluir', style: 'destructive', onPress: () => removeProduct(id) },
-      ],
+      ]
     );
-  };
+  }
 
-  const pendingItems = products.filter((p) => p.purchased === 0);
-  const purchasedItems = products.filter((p) => p.purchased === 1);
+  const pendentes = products.filter((p) => p.purchased === 0);
+  const comprados = products.filter((p) => p.purchased === 1);
 
-  const total = products.reduce((sum, p) => {
-    if (p.price && p.purchased === 0) return sum + p.price * p.quantity;
-    return sum;
-  }, 0);
+  let total = 0;
+  for (const p of products) {
+    if (p.price && p.purchased === 0) {
+      total = total + p.price * p.quantity;
+    }
+  }
 
-  const renderItem = (item: Product) => (
-    <View key={item.id} className="bg-white rounded-2xl mx-4 mb-3 p-4 shadow-sm flex-row items-center">
-      <TouchableOpacity
-        onPress={() => togglePurchased(item.id, item.purchased)}
-        className={`w-6 h-6 rounded-full border-2 mr-3 items-center justify-center flex-shrink-0 ${
-          item.purchased === 1
-            ? 'bg-orange-500 border-orange-500'
-            : 'border-gray-300 bg-white'
-        }`}
-      >
-        {item.purchased === 1 && (
-          <Text className="text-white text-xs font-bold">✓</Text>
-        )}
-      </TouchableOpacity>
-
-      <View className="flex-1">
-        <Text
-          className={`text-base font-semibold ${
-            item.purchased === 1 ? 'line-through text-gray-400' : 'text-gray-800'
+  function renderItem(item: Product) {
+    return (
+      <View key={item.id} className="bg-white rounded-2xl mx-4 mb-3 p-4 shadow-sm flex-row items-center">
+        <TouchableOpacity
+          onPress={() => togglePurchased(item.id, item.purchased)}
+          className={`w-6 h-6 rounded-full border-2 mr-3 items-center justify-center flex-shrink-0 ${
+            item.purchased === 1
+              ? 'bg-orange-500 border-orange-500'
+              : 'border-gray-300 bg-white'
           }`}
         >
-          {item.name}
-        </Text>
-        <Text className="text-sm text-gray-500">
-          Qtd: {item.quantity}
-          {item.price ? `  •  R$ ${item.price.toFixed(2)}` : ''}
-        </Text>
-      </View>
+          {item.purchased === 1 && (
+            <Text className="text-white text-xs font-bold">✓</Text>
+          )}
+        </TouchableOpacity>
 
-      <View className="flex-row gap-2">
-        <TouchableOpacity
-          onPress={() => router.push(`/form?id=${item.id}`)}
-          className="w-9 h-9 rounded-xl bg-orange-50 items-center justify-center"
-        >
-          <Text className="text-base">✏️</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleDelete(item.id, item.name)}
-          className="w-9 h-9 rounded-xl bg-red-100 items-center justify-center"
-        >
-          <Text className="text-base">❌</Text>
-        </TouchableOpacity>
+        <View className="flex-1">
+          <Text
+            className={`text-base font-semibold ${
+              item.purchased === 1 ? 'line-through text-gray-400' : 'text-gray-800'
+            }`}
+          >
+            {item.name}
+          </Text>
+          <Text className="text-sm text-gray-500">
+            Qtd: {item.quantity}
+            {item.price ? `  •  R$ ${item.price.toFixed(2)}` : ''}
+          </Text>
+        </View>
+
+        <View className="flex-row gap-2">
+          <TouchableOpacity
+            onPress={() => router.push(`/form?id=${item.id}`)}
+            className="w-9 h-9 rounded-xl bg-orange-50 items-center justify-center"
+          >
+            <Text className="text-base">✏️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleDelete(item.id, item.name)}
+            className="w-9 h-9 rounded-xl bg-red-100 items-center justify-center"
+          >
+            <Text className="text-base">❌</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 
   if (loading) {
     return (
@@ -95,7 +99,6 @@ export default function HomeScreen() {
         data={[]}
         keyExtractor={() => 'dummy'}
         renderItem={null}
-        ListEmptyComponent={null}
         contentContainerStyle={{ paddingBottom: 120 }}
         ListHeaderComponent={
           <>
@@ -111,25 +114,25 @@ export default function HomeScreen() {
               </View>
             ) : (
               <>
-                {pendingItems.length > 0 && (
+                {pendentes.length > 0 && (
                   <>
                     <Text className="mx-4 mt-4 mb-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                      🛒 A comprar ({pendingItems.length})
+                      🛒 A comprar ({pendentes.length})
                     </Text>
-                    {pendingItems.map(renderItem)}
+                    {pendentes.map(renderItem)}
                   </>
                 )}
 
-                {pendingItems.length > 0 && purchasedItems.length > 0 && (
+                {pendentes.length > 0 && comprados.length > 0 && (
                   <View className="mx-4 my-3 h-px bg-gray-200" />
                 )}
 
-                {purchasedItems.length > 0 && (
+                {comprados.length > 0 && (
                   <>
                     <Text className="mx-4 mb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                      ✅ Comprados ({purchasedItems.length})
+                      ✅ Comprados ({comprados.length})
                     </Text>
-                    {purchasedItems.map(renderItem)}
+                    {comprados.map(renderItem)}
                   </>
                 )}
 
